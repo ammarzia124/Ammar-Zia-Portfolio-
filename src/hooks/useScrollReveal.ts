@@ -2,11 +2,11 @@
 
 import { useEffect, useRef } from "react";
 import gsap from "gsap";
-import { ScrollTrigger } from "gsap/ScrollTrigger";
-
-if (typeof window !== "undefined") {
-  gsap.registerPlugin(ScrollTrigger);
-}
+import {
+  DEFAULT_EASE,
+  SCROLL_TRIGGER_DEFAULTS,
+} from "@/lib/animations";
+import { useReducedMotion } from "./useReducedMotion";
 
 interface ScrollRevealOptions {
   y?: number;
@@ -20,15 +20,11 @@ export function useScrollReveal<T extends HTMLElement = HTMLDivElement>(
   options: ScrollRevealOptions = {}
 ) {
   const ref = useRef<T>(null);
+  const prefersReduced = useReducedMotion();
 
   useEffect(() => {
     const el = ref.current;
-    if (!el) return;
-
-    const prefersReduced = window.matchMedia(
-      "(prefers-reduced-motion: reduce)"
-    ).matches;
-    if (prefersReduced) return;
+    if (!el || prefersReduced) return;
 
     const children = el.querySelectorAll("[data-reveal]");
     const targets = children.length > 0 ? children : [el];
@@ -40,8 +36,8 @@ export function useScrollReveal<T extends HTMLElement = HTMLDivElement>(
 
     const trigger = ScrollTrigger.create({
       trigger: el,
-      start: options.start ?? "top 85%",
-      once: true,
+      start: options.start ?? SCROLL_TRIGGER_DEFAULTS.start,
+      once: SCROLL_TRIGGER_DEFAULTS.once,
       onEnter: () => {
         gsap.to(targets, {
           opacity: 1,
@@ -49,7 +45,7 @@ export function useScrollReveal<T extends HTMLElement = HTMLDivElement>(
           duration: options.duration ?? 0.6,
           delay: options.delay ?? 0,
           stagger: options.stagger ?? 0.1,
-          ease: "power2.out",
+          ease: DEFAULT_EASE,
         });
       },
     });
@@ -57,7 +53,14 @@ export function useScrollReveal<T extends HTMLElement = HTMLDivElement>(
     return () => {
       trigger.kill();
     };
-  }, [options.y, options.duration, options.delay, options.stagger, options.start]);
+  }, [
+    prefersReduced,
+    options.y,
+    options.duration,
+    options.delay,
+    options.stagger,
+    options.start,
+  ]);
 
   return ref;
 }

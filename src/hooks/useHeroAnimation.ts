@@ -2,6 +2,8 @@
 
 import { useEffect, useRef } from "react";
 import gsap from "gsap";
+import { DEFAULT_EASE } from "@/lib/animations";
+import { useReducedMotion } from "./useReducedMotion";
 
 /**
  * Hero entrance animation — staggered reveal per element.
@@ -17,15 +19,11 @@ import gsap from "gsap";
  */
 export function useHeroAnimation() {
   const containerRef = useRef<HTMLDivElement>(null);
+  const prefersReduced = useReducedMotion();
 
   useEffect(() => {
     const el = containerRef.current;
-    if (!el) return;
-
-    const prefersReduced = window.matchMedia(
-      "(prefers-reduced-motion: reduce)"
-    ).matches;
-    if (prefersReduced) return;
+    if (!el || prefersReduced) return;
 
     const label = el.querySelector<HTMLElement>("[data-hero-label]");
     const heading = el.querySelector<HTMLElement>("[data-hero-heading]");
@@ -36,7 +34,6 @@ export function useHeroAnimation() {
     const textTargets = [label, heading, paragraph, ctas].filter(Boolean);
     const visualTarget = visual ?? null;
 
-    // Set initial state: hidden
     gsap.set(textTargets, { opacity: 0, y: 24 });
     if (visualTarget) {
       gsap.set(visualTarget, { opacity: 0 });
@@ -44,7 +41,6 @@ export function useHeroAnimation() {
 
     const tl = gsap.timeline({ delay: 0.15 });
 
-    // Text elements — staggered fade + slide
     if (label) {
       tl.to(label, { opacity: 1, y: 0, duration: 0.6, ease: "power3.out" }, 0);
     }
@@ -57,16 +53,14 @@ export function useHeroAnimation() {
     if (ctas) {
       tl.to(ctas, { opacity: 1, y: 0, duration: 0.6, ease: "power3.out" }, 0.3);
     }
-
-    // Visual — fade only, no translateY
     if (visualTarget) {
-      tl.to(visualTarget, { opacity: 1, duration: 0.8, ease: "power2.out" }, 0.4);
+      tl.to(visualTarget, { opacity: 1, duration: 0.8, ease: DEFAULT_EASE }, 0.4);
     }
 
     return () => {
       tl.kill();
     };
-  }, []);
+  }, [prefersReduced]);
 
   return containerRef;
 }
