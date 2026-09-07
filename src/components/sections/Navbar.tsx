@@ -1,9 +1,12 @@
 "use client";
 
 import { useState, useEffect, useRef, useCallback } from "react";
+import gsap from "gsap";
 import Link from "next/link";
 import { Menu, X } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { DEFAULT_EASE } from "@/lib/animations";
+import { useReducedMotion } from "@/hooks/useReducedMotion";
 import { Button } from "@/components/ui/button";
 import { ThemeToggle } from "@/components/ui/ThemeToggle";
 import { navLinks } from "@/data/nav";
@@ -15,6 +18,25 @@ export function Navbar() {
   const [activeSection, setActiveSection] = useState<string | null>(null);
   const mobileMenuRef = useRef<HTMLDivElement>(null);
   const menuButtonRef = useRef<HTMLButtonElement>(null);
+  const headerRef = useRef<HTMLElement>(null);
+  const prefersReduced = useReducedMotion();
+
+  // Nav entrance animation
+  useEffect(() => {
+    if (prefersReduced) return;
+
+    const header = headerRef.current;
+    if (!header) return;
+
+    gsap.set(header, { opacity: 0, y: -12 });
+    gsap.to(header, {
+      opacity: 1,
+      y: 0,
+      duration: 0.5,
+      ease: DEFAULT_EASE,
+      delay: 0.1,
+    });
+  }, [prefersReduced]);
 
   // Scroll detection for header background
   useEffect(() => {
@@ -104,6 +126,8 @@ export function Navbar() {
 
   return (
     <header
+      ref={headerRef}
+      data-animate="nav"
       className={cn(
         "fixed top-0 left-0 right-0 z-50 transition-all duration-300",
         scrolled
@@ -138,7 +162,7 @@ export function Navbar() {
                   <Link
                     href={link.href}
                     className={cn(
-                      "text-sm font-medium transition-colors hover:text-foreground",
+                      "nav-link text-sm font-medium transition-colors hover:text-foreground",
                       isActive
                         ? "text-foreground"
                         : "text-muted-foreground"
@@ -182,7 +206,7 @@ export function Navbar() {
           role="dialog"
           aria-label="Mobile navigation"
           onKeyDown={handleKeyDown}
-          className="fixed inset-0 top-16 z-40 border-b border-border bg-background md:hidden"
+          className="mobile-menu-enter fixed inset-0 top-16 z-40 border-b border-border bg-background md:hidden"
         >
           <div className="container-custom flex flex-col gap-6 py-8">
             {navLinks.map((link) => {
