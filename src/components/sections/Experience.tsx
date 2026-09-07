@@ -1,8 +1,13 @@
+"use client";
+
 import { SectionWrapper } from "@/components/ui/SectionWrapper";
 import { SectionHeading } from "@/components/ui/SectionHeading";
+import { useScrollReveal } from "@/hooks/useScrollReveal";
 import { experiences } from "@/data/experience";
 
 export function Experience() {
+  const listRef = useScrollReveal<HTMLDivElement>({ stagger: 0.1 });
+
   return (
     <SectionWrapper id="experience">
       <SectionHeading
@@ -12,9 +17,9 @@ export function Experience() {
       />
 
       <div className="relative ml-4 border-l border-border pl-8 md:ml-0 md:pl-0 md:border-none md:border-l-0">
-        <div className="flex flex-col gap-12">
+        <div ref={listRef} className="flex flex-col gap-12">
           {experiences.map((exp, i) => (
-            <div key={i} className="relative flex gap-8">
+            <div data-reveal key={i} className="relative flex gap-8">
               {/* Timeline dot */}
               <div className="absolute -left-12 top-1 hidden h-3 w-3 rounded-full border-2 border-primary bg-background md:block" aria-hidden="true" />
 

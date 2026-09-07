@@ -1,10 +1,15 @@
+"use client";
+
 import { SectionWrapper } from "@/components/ui/SectionWrapper";
 import { SectionHeading } from "@/components/ui/SectionHeading";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { useScrollReveal } from "@/hooks/useScrollReveal";
 import { skillCategories } from "@/data/skills";
 
 export function Skills() {
+  const gridRef = useScrollReveal<HTMLDivElement>({ stagger: 0.08 });
+
   return (
     <SectionWrapper id="skills">
       <SectionHeading
@@ -13,9 +18,9 @@ export function Skills() {
         subtitle="Technologies and tools I work with across networking, security, development, and AI."
       />
 
-      <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+      <div ref={gridRef} className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
         {skillCategories.map((category) => (
-          <Card key={category.name}>
+          <Card key={category.name} data-reveal>
             <CardHeader>
               <CardTitle className="text-lg">{category.name}</CardTitle>
             </CardHeader>

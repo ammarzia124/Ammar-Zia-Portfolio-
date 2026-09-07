@@ -14,6 +14,7 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
+import { useScrollReveal } from "@/hooks/useScrollReveal";
 import { projects } from "@/data/projects";
 import type { Project } from "@/types/project";
 
@@ -137,6 +138,8 @@ function CaseStudyModal({ project }: { project: Project }) {
 }
 
 export function Projects() {
+  const gridRef = useScrollReveal<HTMLDivElement>({ stagger: 0.1 });
+
   return (
     <SectionWrapper id="projects">
       <SectionHeading
@@ -145,10 +148,13 @@ export function Projects() {
         subtitle="Selected work showcasing my approach to building secure, intelligent systems."
       />
 
-      <div className="grid gap-6 md:grid-cols-2">
+      <div ref={gridRef} className="grid gap-6 md:grid-cols-2">
         {projects.map((project) => (
           <Dialog key={project.id}>
-            <Card className="group flex flex-col transition-shadow hover:shadow-lg">
+            <Card
+              data-reveal
+              className="group flex flex-col transition-all duration-200 hover:shadow-lg hover:border-primary/50"
+            >
               <CardHeader>
                 <div className="flex items-start justify-between gap-4">
                   <div className="flex flex-col gap-1">
@@ -198,7 +204,7 @@ export function Projects() {
                 <DialogTrigger asChild>
                   <Button variant="ghost" className="group/btn">
                     View Case Study
-                    <ArrowRight className="ml-2 h-4 w-4 transition-transform group-hover/btn:translate-x-1" />
+                    <ArrowRight className="ml-2 h-4 w-4 transition-transform duration-200 group-hover/btn:translate-x-1" />
                   </Button>
                 </DialogTrigger>
               </CardFooter>

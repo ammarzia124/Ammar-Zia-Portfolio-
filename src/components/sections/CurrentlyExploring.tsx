@@ -1,9 +1,14 @@
+"use client";
+
 import { Lightbulb } from "lucide-react";
 import { SectionWrapper } from "@/components/ui/SectionWrapper";
 import { SectionHeading } from "@/components/ui/SectionHeading";
+import { useScrollReveal } from "@/hooks/useScrollReveal";
 import { exploring } from "@/data/exploring";
 
 export function CurrentlyExploring() {
+  const gridRef = useScrollReveal<HTMLDivElement>({ stagger: 0.08 });
+
   return (
     <SectionWrapper id="exploring">
       <SectionHeading
@@ -12,11 +17,12 @@ export function CurrentlyExploring() {
         subtitle="Areas I'm actively learning and growing in right now."
       />
 
-      <div className="grid gap-4 sm:grid-cols-2">
+      <div ref={gridRef} className="grid gap-4 sm:grid-cols-2">
         {exploring.map((item) => (
           <div
             key={item.area}
-            className="flex items-start gap-4 rounded-lg border border-border bg-card p-6 transition-shadow hover:shadow-md"
+            data-reveal
+            className="flex items-start gap-4 rounded-lg border border-border bg-card p-6 transition-all duration-200 hover:shadow-md"
           >
             <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-md bg-primary/10">
               <Lightbulb className="h-4 w-4 text-primary" />
