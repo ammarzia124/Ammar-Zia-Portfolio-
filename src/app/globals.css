@@ -281,6 +281,15 @@
   }
 }
 
+@keyframes dataFlow {
+  from {
+    stroke-dashoffset: 20;
+  }
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+
 /* ============================================
    NAV LINK UNDERLINE
    ============================================ */
